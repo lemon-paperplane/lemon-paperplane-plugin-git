@@ -1,0 +1,75 @@
+{
+  "id": "git",
+  "name": "%plugin.name%",
+  "version": "0.1.0",
+  "vendor": "Lemon Paperplane",
+  "description": "%plugin.description%",
+  "icon": "icons/git.svg",
+  "license": "MIT",
+  "category": "vcs",
+  "engines": {"paperplane": ">=0.1.0 <0.2.0"},
+  "protocol": 1,
+  "executable": "bin/paperplane-plugin-git",
+  "activation": {},
+  "contributes": {
+    "languages": [
+      {"id": "gitignore", "name": "%lang.gitignore%", "extensions": [".gitignore"], "filenames": [".gitignore", ".dockerignore", ".npmignore", ".eslintignore", ".prettierignore", ".stylelintignore", ".hgignore", ".helmignore", ".vscodeignore", ".gcloudignore", ".slugignore"], "module": "editor/lang-gitignore.js", "lineComment": "#"},
+      {"id": "gitattributes", "name": "%lang.gitattributes%", "filenames": [".gitattributes"], "module": "editor/lang-gitignore.js", "lineComment": "#"},
+      {"id": "diff", "name": "Diff", "extensions": [".diff", ".patch", ".rej"], "module": "editor/lang-diff.js"},
+      {"id": "git-commit", "name": "%lang.gitCommit%", "filenames": ["COMMIT_EDITMSG", "MERGE_MSG", "TAG_EDITMSG", "SQUASH_MSG", "git-rebase-todo"], "module": "editor/lang-gitcommit.js", "lineComment": "#"},
+      {"id": "git-config", "name": "%lang.gitConfig%", "filenames": [".gitconfig", ".gitmodules"], "module": "editor/lang-gitconfig.js", "lineComment": "#"}
+    ],
+    "vcs": {"id": "git", "name": "Git", "rootMarker": ".git"},
+    "views": [
+      {"id": "remotes", "title": "%view.title.remotes%", "icon": "builtin:server", "location": "vcs.tab", "order": 10},
+      {"id": "tags", "title": "%view.title.tags%", "icon": "builtin:tag", "location": "vcs.tab", "order": 20},
+      {"id": "submodules", "title": "%view.title.submodules%", "icon": "builtin:boxes", "location": "vcs.tab", "order": 30},
+      {"id": "worktrees", "title": "%view.title.worktrees%", "icon": "builtin:git-fork", "location": "vcs.tab", "order": 40},
+      {"id": "settings", "title": "%view.title.settings%", "icon": "builtin:settings", "location": "vcs.tab", "order": 90}
+    ],
+    "actions": [
+      {"id": "openRepoInBrowser", "title": "%action.openRepoInBrowser%", "icon": "builtin:external-link", "group": "open", "locations": ["vcs.toolbar", "project.menu"]},
+      {"id": "openCommitInBrowser", "title": "%action.openCommitInBrowser%", "icon": "builtin:external-link", "group": "open", "locations": ["vcs.commitMenu"]},
+      {"id": "openFileInBrowser", "title": "%action.openFileInBrowser%", "icon": "builtin:external-link", "group": "open", "locations": ["vcs.fileMenu"]},
+      {"id": "createPatchFromCommits", "title": "%action.createPatchFromCommits%", "icon": "builtin:file-diff", "group": "other", "locations": ["vcs.commitMenu"],
+        "form": [{"key": "output", "title": "%action.form.output%", "type": "path", "info": "%action.form.outputInfo%"}]},
+      {"id": "createPatchFromChanges", "title": "%action.createPatchFromChanges%", "icon": "builtin:file-diff", "group": "other", "locations": ["vcs.fileMenu"],
+        "form": [{"key": "output", "title": "%action.form.output%", "type": "path", "info": "%action.form.outputInfo%"}]},
+      {"id": "cleanupBranches", "title": "%action.cleanupBranches%", "icon": "builtin:trash-2", "group": "other", "locations": ["vcs.toolbar"],
+        "confirm": "%action.cleanupBranches.confirm%",
+        "form": [
+          {"key": "merged", "title": "%action.form.merged%", "type": "boolean", "default": true},
+          {"key": "gone", "title": "%action.form.gone%", "type": "boolean", "default": true}
+        ]},
+      {"id": "optimizeRepository", "title": "%action.optimizeRepository%", "icon": "builtin:gauge", "group": "other", "locations": ["vcs.toolbar"]}
+    ],
+    "settings": [
+      {"key": "pullMode", "title": "%setting.pullMode%", "type": "select", "default": "merge", "options": [
+        {"value": "merge", "label": "%setting.pullMode.merge%"},
+        {"value": "rebase", "label": "%setting.pullMode.rebase%"},
+        {"value": "ff-only", "label": "%setting.pullMode.ffOnly%"},
+        {"value": "config", "label": "%setting.pullMode.config%"}
+      ]},
+      {"key": "autoFetchMinutes", "title": "%setting.autoFetchMinutes%", "type": "number", "default": 0, "info": "%setting.autoFetchMinutes.info%"},
+      {"key": "fetchPrune", "title": "%setting.fetchPrune%", "type": "boolean", "default": false},
+      {"key": "setUpstreamOnPush", "title": "%setting.setUpstreamOnPush%", "type": "boolean", "default": true},
+      {"key": "mergeTool", "title": "%setting.mergeTool%", "type": "select", "default": "auto", "options": [
+        {"value": "auto", "label": "%setting.mergeTool.auto%"},
+        {"value": "vscode", "label": "Visual Studio Code"},
+        {"value": "cursor", "label": "Cursor"},
+        {"value": "idea", "label": "IntelliJ IDEA"},
+        {"value": "webstorm", "label": "WebStorm"},
+        {"value": "ksdiff", "label": "Kaleidoscope"},
+        {"value": "bc", "label": "Beyond Compare"},
+        {"value": "opendiff", "label": "FileMerge"},
+        {"value": "p4merge", "label": "P4Merge"},
+        {"value": "meld", "label": "Meld"},
+        {"value": "kdiff3", "label": "KDiff3"},
+        {"value": "winmerge", "label": "WinMerge"},
+        {"value": "tortoisegitmerge", "label": "TortoiseGitMerge"}
+      ]},
+      {"key": "gitPath", "title": "%setting.gitPath%", "type": "path", "placeholder": "%setting.gitPath.placeholder%", "advanced": true},
+      {"key": "untrackedLimit", "title": "%setting.untrackedLimit%", "type": "number", "default": 5000, "info": "%setting.untrackedLimit.info%", "advanced": true}
+    ]
+  }
+}
