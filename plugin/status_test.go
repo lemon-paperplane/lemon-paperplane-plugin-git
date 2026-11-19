@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -22,14 +23,17 @@ func TestStatusParsing(t *testing.T) {
 	e.write(dir, "del.txt", "bye\n")
 	e.commitAll(dir, "base")
 
-	e.write(dir, "a b.txt", "1\n2 changed\n3\n4\n")                  // 未暂存修改
-	e.write(dir, "中 文/文件.txt", "甲\n乙\n丙\n")                          // 暂存修改
-	e.git(dir, "add", "中 文/文件.txt")                                  //
-	e.git(dir, "mv", "old.txt", "new name.txt")                      // 暂存重命名
-	e.write(dir, "bin.dat", "\x00\x01\x02\x03")                      // 二进制修改
-	os.Remove(filepath.Join(dir, "del.txt"))                         // 未暂存删除
-	e.write(dir, "untracked dir/新 文件.md", "x\n")                     // 未跟踪
-	e.write(dir, "weird\nname.txt", "newline in name\n")             // 文件名带换行
+	e.write(dir, "a b.txt", "1\n2 changed\n3\n4\n") // 未暂存修改
+	e.write(dir, "中 文/文件.txt", "甲\n乙\n丙\n")         // 暂存修改
+	e.git(dir, "add", "中 文/文件.txt")                 //
+	e.git(dir, "mv", "old.txt", "new name.txt")     // 暂存重命名
+	e.write(dir, "bin.dat", "\x00\x01\x02\x03")     // 二进制修改
+	os.Remove(filepath.Join(dir, "del.txt"))        // 未暂存删除
+	e.write(dir, "untracked dir/新 文件.md", "x\n")    // 未跟踪
+	weird := runtime.GOOS != "windows"              // Windows 文件名不能带换行
+	if weird {
+		e.write(dir, "weird\nname.txt", "newline in name\n") // 文件名带换行
+	}
 	e.git(dir, "stash", "push", "-q", "-m", "s1", "--", "README.md") // 没东西可储藏也无妨
 	e.write(dir, "README.md", "hello\nstash me\n")
 	e.git(dir, "stash", "push", "-q", "-m", "s2", "--", "README.md")
@@ -67,7 +71,9 @@ func TestStatusParsing(t *testing.T) {
 	}
 	check("del.txt", "D", false, true)
 	check("untracked dir/新 文件.md", "?", false, true)
-	check("weird\nname.txt", "?", false, true)
+	if weird {
+		check("weird\nname.txt", "?", false, true)
+	}
 
 	// 与 SDK 类型兼容
 	raw, _ := json.Marshal(st)

@@ -3,6 +3,7 @@ package git
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -214,6 +215,9 @@ func TestCommitDuringMergeAndInitialCommit(t *testing.T) {
 
 // 文件名里的通配字符按字面量处理（不会把 xy.txt 当成 x*.txt 一起提交）。
 func TestCommitGlobCharsInPath(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows 文件名不能含 * 和 ?")
+	}
 	e := newEnv(t)
 	dir := e.repo()
 	e.write(dir, "x*.txt", "a\n")
